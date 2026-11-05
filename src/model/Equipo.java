@@ -1,7 +1,7 @@
 package model;
 
 public class Equipo {
-    private Long id;
+    private int id;
     private String codigoInventario; 
     private String marca;
     private String modelo;
@@ -13,7 +13,7 @@ public class Equipo {
 
     }
 
-    public Equipo(String codigoInventario, String estado, Long id, String marca, String modelo, String observacionesEstado, String tipoEquipo) {
+    public Equipo(String codigoInventario, String estado, int id, String marca, String modelo, String observacionesEstado, String tipoEquipo) {
         this.codigoInventario = codigoInventario;
         this.estado = estado;
         this.id = id;
@@ -23,9 +23,9 @@ public class Equipo {
         this.tipoEquipo = tipoEquipo;
     }
 
-    public Long getId() {return id;}
+    public int getId() {return id;}
 
-    public void setId(Long id) {this.id = id;}
+    public void setId(int id) {this.id = id;}
 
     public String getCodigoInventario() {return codigoInventario;}
 

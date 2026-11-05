@@ -8,36 +8,30 @@ import model.Usuario;
 
 public class UsuarioController {
     private List<Usuario> listaUsuarios;
-    private Map<String, Usuario> mapaPorDocumento;
-    private Long idContador;
+    private Map<String, Usuario> mapaPorCodigoInstitucional;
+    private int idContador;
 
     public UsuarioController() {
         this.listaUsuarios = new LinkedList<>();
-        this.mapaPorDocumento = new HashMap<>();
-        this.idContador = 1L;
+        this.mapaPorCodigoInstitucional = new HashMap<>();
+        this.idContador = 1;
     }
 
     public String registrarUsuario(Usuario nuevoUsuario) {
-        if (nuevoUsuario.getDocumentoIdentidad() == null || nuevoUsuario.getDocumentoIdentidad().trim().isEmpty() ||
+        if (nuevoUsuario.getCodigoInstitucional() == null || nuevoUsuario.getCodigoInstitucional().trim().isEmpty() ||
             nuevoUsuario.getNombre() == null || nuevoUsuario.getNombre().trim().isEmpty() ||
             nuevoUsuario.getCorreoInstitucional() == null || nuevoUsuario.getCorreoInstitucional().trim().isEmpty()) {
-            return "ERROR: Los campos Documento, Nombre y Correo son obligatorios.";
+            return "ERROR: El Código Institucional (ID Universitario), Nombre y Correo son obligatorios.";
         }
 
-        
         String correo = nuevoUsuario.getCorreoInstitucional().toLowerCase();
-        if (!correo.endsWith("@universidad.edu.co")) {
-            return "ERROR: El correo debe ser un correo institucional válido (@universidad.edu.co).";
+        if (!correo.endsWith("@unicolombo.edu.co") && !correo.endsWith("@unicartagena.edu.co")) {
+            return "ERROR: Debe ingresar un correo institucional válido (@unicolombo.edu.co o @unicartagena.edu.co).";
         }
 
-        if (mapaPorDocumento.containsKey(nuevoUsuario.getDocumentoIdentidad())) {
-            return "ERROR: Ya existe un usuario registrado con este documento de identidad.";
-        }
-
-        for (Usuario u : listaUsuarios) {
-            if (u.getCorreoInstitucional().equalsIgnoreCase(nuevoUsuario.getCorreoInstitucional())) {
-                return "ERROR: Ya existe un usuario registrado con este correo institucional.";
-            }
+        // Búsqueda O(1) con la clave del Código Institucional
+        if (mapaPorCodigoInstitucional.containsKey(nuevoUsuario.getCodigoInstitucional())) {
+            return "ERROR: Ya existe un estudiante o usuario registrado con este Código Institucional.";
         }
 
         nuevoUsuario.setId(idContador++);
@@ -45,20 +39,20 @@ public class UsuarioController {
             nuevoUsuario.setEstado("ACTIVO");
         }
 
-        
         listaUsuarios.add(nuevoUsuario);
-        mapaPorDocumento.put(nuevoUsuario.getDocumentoIdentidad(), nuevoUsuario);
+        mapaPorCodigoInstitucional.put(nuevoUsuario.getCodigoInstitucional(), nuevoUsuario);
 
-        return "ÉXITO: Usuario registrado correctamente con ID: " + nuevoUsuario.getId();
+        return "ÉXITO: Usuario registrado correctamente con ID de sistema: " + nuevoUsuario.getId();
     }
 
-    public Usuario buscarPorDocumento(String documento) {
-        return mapaPorDocumento.get(documento);
+    public Usuario buscarPorCodigoInstitucional(String codigoInstitucional) {
+        return mapaPorCodigoInstitucional.get(codigoInstitucional);
     }
 
-    public Usuario buscarPorId(Long id) {
+    
+    public Usuario buscarPorId(int id) {
         for (Usuario u : listaUsuarios) {
-            if (u.getId().equals(id)) {
+            if (u.getId() == id) {
                 return u;
             }
         }
@@ -69,7 +63,7 @@ public class UsuarioController {
         return listaUsuarios;
     }
 
-    public String cambiarEstadoUsuario(Long id, String nuevoEstado) {
+    public String cambiarEstadoUsuario(int id, String nuevoEstado) {
         Usuario usuario = buscarPorId(id);
         if (usuario == null) {
             return "ERROR: Usuario no encontrado.";

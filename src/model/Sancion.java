@@ -3,9 +3,9 @@ package model;
 import java.time.LocalDateTime;
 
 public class Sancion {
-    private Long id;
-    private Long prestamoId;       
-    private Long usuarioId;         
+    private int id;
+    private int prestamoId;       
+    private int usuarioId;         
     private String motivo;          
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaFin;
@@ -15,7 +15,7 @@ public class Sancion {
     public Sancion() {
     }
 
-    public Sancion(Long id, Long prestamoId, Long usuarioId, String motivo, 
+    public Sancion(int id, int prestamoId, int usuarioId, String motivo, 
                    LocalDateTime fechaInicio, LocalDateTime fechaFin, String estado, String observaciones) {
         this.id = id;
         this.prestamoId = prestamoId;
@@ -28,27 +28,27 @@ public class Sancion {
     }
 
    
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public Long getPrestamoId() {
+    public int getPrestamoId() {
         return prestamoId;
     }
 
-    public void setPrestamoId(Long prestamoId) {
+    public void setPrestamoId(int prestamoId) {
         this.prestamoId = prestamoId;
     }
 
-    public Long getUsuarioId() {
+    public int getUsuarioId() {
         return usuarioId;
     }
 
-    public void setUsuarioId(Long usuarioId) {
+    public void setUsuarioId(int usuarioId) {
         this.usuarioId = usuarioId;
     }
 
