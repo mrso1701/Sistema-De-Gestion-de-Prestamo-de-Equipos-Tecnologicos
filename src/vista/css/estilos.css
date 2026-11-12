@@ -1,0 +1,266 @@
+
+/* ESTILOS GENERALES */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #eaf2f8;
+    font-family: Arial, sans-serif;
+    color: #333;
+    margin: 0;
+    min-height: 100vh;
+}
+
+h1, h2, h3 {
+    color: #0b4f8a;
+}
+
+h1 {
+    margin-top: 0;
+}
+
+p {
+    line-height: 1.4;
+}
+
+/* ENCABEZADO */
+.encabezado, .encabezado-login {
+    text-align: center;
+    padding: 25px 20px;
+}
+
+.encabezado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    background-color: white;
+    border-bottom: 1px solid #d8e3ec;
+}
+
+.encabezado h1, .encabezado p {
+    margin: 5px 0;
+}
+
+.encabezado-login .logo {
+    width: 220px;
+    max-width: 80%;
+    height: auto;
+}
+
+/* MENÚ */
+.menu {
+    background-color: #0b4f8a;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 10px;
+}
+
+.menu a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 14px;
+    border-radius: 6px;
+}
+
+.menu a:hover, .menu a.activo {
+    background-color: #083b68;
+}
+
+/* CONTENEDORES */
+.contenedor {
+    width: 92%;
+    max-width: 1050px;
+    margin: 25px auto;
+}
+
+.tarjeta-login, .panel {
+    background-color: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.08);
+    margin: 20px auto;
+}
+
+.tarjeta-login {
+    width: 90%;
+    max-width: 380px;
+    text-align: left;
+}
+
+.tarjeta-login h2 {
+    text-align: center;
+}
+
+/* FORMULARIOS */
+label {
+    display: block;
+    font-weight: bold;
+    margin: 12px 0 6px;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #cbd6df;
+    border-radius: 6px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+textarea {
+    min-height: 75px;
+    resize: vertical;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #0b4f8a;
+}
+
+/* BOTONES */
+.boton {
+    display: inline-block;
+    background-color: #0b4f8a;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    padding: 11px 18px;
+    margin-top: 15px;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.boton:hover {
+    background-color: #083b68;
+}
+
+.boton-secundario {
+    background-color: white;
+    color: #0b4f8a;
+    border: 1px solid #0b4f8a;
+}
+
+.boton-secundario:hover {
+    background-color: #eaf2f8;
+}
+
+.boton-verde {
+    background-color: #28a745;
+}
+
+.boton-verde:hover {
+    background-color: #218838;
+}
+
+/* RESUMEN DEL DASHBOARD */
+.resumen {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.caja-resumen {
+    background-color: white;
+    padding: 18px 22px;
+    border-radius: 10px;
+    width: 260px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.06);
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.caja-resumen strong {
+    color: #0b4f8a;
+    font-size: 20px;
+}
+
+/* TABLAS */
+.tabla-contenedor {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    margin-top: 15px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #e1e8ed;
+}
+
+th {
+    background-color: #0b4f8a;
+    color: white;
+}
+
+.vacio {
+    color: #667784;
+    padding: 22px;
+}
+
+/* ORGANIZACIÓN DE TÍTULOS Y FORMULARIOS */
+.fila-titulo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.fila-titulo h2 {
+    margin: 0;
+}
+
+.formulario-linea {
+    display: flex;
+    align-items: end;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.formulario-linea .campo {
+    flex: 1;
+    min-width: 220px;
+}
+
+.formulario-linea .boton {
+    margin-bottom: 0;
+}
+
+.nota {
+    color: #667784;
+    font-size: 13px;
+    margin-top: 15px;
+}
+
+/* ADAPTACIÓN A CELULARES */
+@media (max-width: 600px) {
+    .encabezado {
+        flex-direction: column;
+    }
+
+    .menu {
+        justify-content: flex-start;
+    }
+
+    .tarjeta-login, .panel {
+        padding: 18px;
+    }
+
+    .caja-resumen {
+        width: 100%;
+    }
+}
