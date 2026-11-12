@@ -1,7 +1,8 @@
 package model;
 
 public class Usuario {
-    private Long id;
+    private int id;
+    private String codigoInstitucional;
     private String documentoIdentidad;
     private String nombre;
     private String apellido;
@@ -14,7 +15,7 @@ public class Usuario {
 
     }
 
-    public Usuario(String apellido, String correoInstitucional, String documentoIdentidad, String estado, Long id, String nombre, String telefono, String tipoUsuario) {
+    public Usuario(String apellido, String correoInstitucional, String documentoIdentidad, String estado, int id, String nombre, String telefono, String tipoUsuario) {
         this.apellido = apellido;
         this.correoInstitucional = correoInstitucional;
         this.documentoIdentidad = documentoIdentidad;
@@ -25,11 +26,11 @@ public class Usuario {
         this.tipoUsuario = tipoUsuario;
     }
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -75,18 +76,23 @@ public class Usuario {
 
     public void setEstado(String estado) {this.estado = estado;}
 
+    public String getCodigoInstitucional() {
+        return codigoInstitucional;
+    }
 
+    public void setCodigoInstitucional(String codigoInstitucional) {
+        this.codigoInstitucional = codigoInstitucional;
+    }
+
+    
     public String toString() {
         return "Usuario{" +
                 "id=" + id +
-                ", documentoIdentidad='" + documentoIdentidad + '\'' +
+                ", codigoInstitucional='" + codigoInstitucional + '\'' +
                 ", nombre='" + nombre + '\'' +
-                ", apellido='" + apellido + '\'' +
                 ", correoInstitucional='" + correoInstitucional + '\'' +
-                ", tipoUsuario='" + tipoUsuario + '\'' +
                 ", estado='" + estado + '\'' +
                 '}';
     }
-    
-    
+       
 }

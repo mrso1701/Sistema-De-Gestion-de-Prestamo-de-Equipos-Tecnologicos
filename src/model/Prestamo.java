@@ -3,12 +3,12 @@ package model;
 import java.time.LocalDateTime;
 
 public class Prestamo {
-    private Long id;
+    private int id;
     private String codigoPrestamo;           
-    private Long usuarioId;                
-    private Long equipoId;                  
-    private Long encargadoEntregaId;       
-    private Long encargadoRecepcionId;      
+    private int usuarioId;                
+    private int equipoId;                  
+    private int encargadoEntregaId;       
+    private int encargadoRecepcionId;      
     private LocalDateTime fechaHoraSalida;
     private LocalDateTime fechaHoraPactadaDevolucion;
     private LocalDateTime fechaHoraDevolucionReal; 
@@ -20,8 +20,8 @@ public class Prestamo {
     }
 
     
-    public Prestamo(Long id, String codigoPrestamo, Long usuarioId, Long equipoId, 
-                    Long encargadoEntregaId, Long encargadoRecepcionId, 
+    public Prestamo(int id, String codigoPrestamo, int usuarioId, int equipoId, 
+                    int encargadoEntregaId, int encargadoRecepcionId, 
                     LocalDateTime fechaHoraSalida, LocalDateTime fechaHoraPactadaDevolucion, 
                     LocalDateTime fechaHoraDevolucionReal, String estadoPrestamo, 
                     String observacionesEntrega, String observacionesDevolucion) {
@@ -41,11 +41,11 @@ public class Prestamo {
 
     // --- GETTERS Y SETTERS ---
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -57,35 +57,35 @@ public class Prestamo {
         this.codigoPrestamo = codigoPrestamo;
     }
 
-    public Long getUsuarioId() {
+    public int getUsuarioId() {
         return usuarioId;
     }
 
-    public void setUsuarioId(Long usuarioId) {
+    public void setUsuarioId(int usuarioId) {
         this.usuarioId = usuarioId;
     }
 
-    public Long getEquipoId() {
+    public int getEquipoId() {
         return equipoId;
     }
 
-    public void setEquipoId(Long equipoId) {
+    public void setEquipoId(int equipoId) {
         this.equipoId = equipoId;
     }
 
-    public Long getEncargadoEntregaId() {
+    public int getEncargadoEntregaId() {
         return encargadoEntregaId;
     }
 
-    public void setEncargadoEntregaId(Long encargadoEntregaId) {
+    public void setEncargadoEntregaId(int encargadoEntregaId) {
         this.encargadoEntregaId = encargadoEntregaId;
     }
 
-    public Long getEncargadoRecepcionId() {
+    public int getEncargadoRecepcionId() {
         return encargadoRecepcionId;
     }
 
-    public void setEncargadoRecepcionId(Long encargadoRecepcionId) {
+    public void setEncargadoRecepcionId(int encargadoRecepcionId) {
         this.encargadoRecepcionId = encargadoRecepcionId;
     }
 
