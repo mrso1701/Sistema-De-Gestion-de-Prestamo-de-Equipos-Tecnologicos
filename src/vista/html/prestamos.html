@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Préstamos</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+</head>
+<body>
+
+    <header class="encabezado">
+        <h1>Gestión de préstamos</h1>
+    </header>
+
+    <nav class="menu">
+        <a href="inicio.html">Inicio</a>
+        <a href="equipos.html">Equipos</a>
+        <a href="usuarios.html">Usuarios</a>
+        <a href="prestamos.html" class="activo">Préstamos</a>
+        <a href="sanciones.html">Sanciones</a>
+        <a href="login.html">Salir</a>
+    </nav>
+
+    <main class="contenedor">
+
+        <section class="panel">
+            <h2>Registrar préstamo</h2>
+
+            <form id="formPrestamo">
+
+                <label for="documentoPrestamo">Documento del usuario</label>
+                <input type="text" id="documentoPrestamo" required>
+
+                <label for="codigoEquipo">Código del equipo</label>
+                <input type="text" id="codigoEquipo" required>
+
+                <label for="fechaDevolucion">Fecha pactada de devolución</label>
+                <input type="datetime-local" id="fechaDevolucion" required>
+
+                <label for="observacionesEntrega">Observaciones de entrega</label>
+                <textarea id="observacionesEntrega"></textarea>
+
+                <button type="submit" class="boton">
+                    Registrar préstamo
+                </button>
+
+            </form>
+        </section>
+
+        <section class="panel">
+            <h2>Registrar devolución</h2>
+
+            <form id="formDevolucion">
+
+                <label for="codigoPrestamo">Código del préstamo</label>
+                <input type="text" id="codigoPrestamo" required>
+
+                <label for="observacionesDevolucion">
+                    Observaciones de devolución
+                </label>
+                <textarea id="observacionesDevolucion"></textarea>
+
+                <button type="submit" class="boton boton-verde">
+                    Registrar devolución
+                </button>
+
+            </form>
+        </section>
+
+        <section class="panel">
+            <h2>Préstamos registrados</h2>
+
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Usuario</th>
+                            <th>Equipo</th>
+                            <th>Fecha de salida</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td colspan="5" class="vacio">
+                                No hay préstamos registrados todavía.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="../js/app.js"></script>
+</body>
+</html>
