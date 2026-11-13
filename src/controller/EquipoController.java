@@ -1,13 +1,20 @@
 package controller;
 
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import model.Equipo;
+import persistencia.JsonManager;
 
 public class EquipoController {
+    private static final String ARCHIVO_JSON = "equipos.json";
+    private static final String ARCHIVO_COLA_JSON = "cola_espera.json";
+    private final JsonManager jsonManager;
+
     // Estructuras de datos
     private List<Equipo> listaEquipos;
     private Map<String, Equipo> mapaPorCodigoInventario; // Búsqueda O(1)
@@ -15,10 +22,27 @@ public class EquipoController {
     private int idContador;
 
     public EquipoController() {
-        this.listaEquipos = new LinkedList<>();
+        this.jsonManager = new JsonManager();
         this.mapaPorCodigoInventario = new HashMap<>();
-        this.colaEsperaEstudiantes = new LinkedList<>();
-        this.idContador = 1;
+
+        Type tipoListaEquipos = new TypeToken<LinkedList<Equipo>>() {}.getType();
+        List<Equipo> cargados = jsonManager.cargarLista(ARCHIVO_JSON, tipoListaEquipos);
+        this.listaEquipos = (cargados != null) ? new LinkedList<>(cargados) : new LinkedList<>();
+
+        Type tipoCola = new TypeToken<LinkedList<String>>() {}.getType();
+        List<String> colaCargada = jsonManager.cargarLista(ARCHIVO_COLA_JSON, tipoCola);
+        this.colaEsperaEstudiantes = (colaCargada != null) ? new LinkedList<>(colaCargada) : new LinkedList<>();
+
+        int maxId = 0;
+        for (Equipo e : this.listaEquipos) {
+            if (e.getCodigoInventario() != null) {
+                this.mapaPorCodigoInventario.put(e.getCodigoInventario(), e);
+            }
+            if (e.getId() > maxId) {
+                maxId = e.getId();
+            }
+        }
+        this.idContador = maxId + 1;
     }
 
     /**
@@ -42,6 +66,8 @@ public class EquipoController {
 
         listaEquipos.add(nuevoEquipo);
         mapaPorCodigoInventario.put(nuevoEquipo.getCodigoInventario(), nuevoEquipo);
+
+        jsonManager.guardarLista(ARCHIVO_JSON, listaEquipos);
 
         return "ÉXITO: Equipo registrado correctamente con ID: " + nuevoEquipo.getId();
     }
@@ -75,6 +101,9 @@ public class EquipoController {
             return "ERROR: Equipo no encontrado.";
         }
         equipo.setEstado(nuevoEstado.toUpperCase());
+
+        jsonManager.guardarLista(ARCHIVO_JSON, listaEquipos);
+
         return "ÉXITO: Estado del equipo " + codigoInventario + " actualizado a " + equipo.getEstado();
     }
 
@@ -85,6 +114,7 @@ public class EquipoController {
      */
     public String agregarAColaEspera(String codigoInstitucional) {
         colaEsperaEstudiantes.add(codigoInstitucional);
+        jsonManager.guardarLista(ARCHIVO_COLA_JSON, new LinkedList<>(colaEsperaEstudiantes));
         return "ÉXITO: Estudiante " + codigoInstitucional + " en posición #" + colaEsperaEstudiantes.size() + " de la cola de espera.";
     }
 
@@ -95,7 +125,9 @@ public class EquipoController {
         if (colaEsperaEstudiantes.isEmpty()) {
             return null;
         }
-        return colaEsperaEstudiantes.poll(); // Saca el primero (FIFO)
+        String siguiente = colaEsperaEstudiantes.poll(); // Saca el primero (FIFO)
+        jsonManager.guardarLista(ARCHIVO_COLA_JSON, new LinkedList<>(colaEsperaEstudiantes));
+        return siguiente;
     }
 
     public Queue<String> getColaEsperaEstudiantes() {

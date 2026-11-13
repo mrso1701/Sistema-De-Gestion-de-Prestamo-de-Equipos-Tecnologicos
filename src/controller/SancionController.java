@@ -1,5 +1,7 @@
 package controller;
 
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -7,19 +9,35 @@ import java.util.List;
 import java.util.Map;
 import model.Sancion;
 import model.Usuario;
+import persistencia.JsonManager;
 
 public class SancionController {
-   private List<Sancion> listaSanciones;
+    private static final String ARCHIVO_JSON = "sanciones.json";
+    private final JsonManager jsonManager;
+
+    private List<Sancion> listaSanciones;
     private Map<Integer, Sancion> mapaSanciones;
     private int idContador;
 
     private UsuarioController usuarioController;
 
     public SancionController(UsuarioController usuarioController) {
-        this.listaSanciones = new LinkedList<>();
+        this.jsonManager = new JsonManager();
         this.mapaSanciones = new HashMap<>();
         this.usuarioController = usuarioController;
-        this.idContador = 1;
+
+        Type tipoLista = new TypeToken<LinkedList<Sancion>>() {}.getType();
+        List<Sancion> cargadas = jsonManager.cargarLista(ARCHIVO_JSON, tipoLista);
+        this.listaSanciones = (cargadas != null) ? new LinkedList<>(cargadas) : new LinkedList<>();
+
+        int maxId = 0;
+        for (Sancion s : this.listaSanciones) {
+            this.mapaSanciones.put(s.getId(), s);
+            if (s.getId() > maxId) {
+                maxId = s.getId();
+            }
+        }
+        this.idContador = maxId + 1;
     }
 
     /**
@@ -50,6 +68,8 @@ public class SancionController {
         listaSanciones.add(nuevaSancion);
         mapaSanciones.put(nuevaSancion.getId(), nuevaSancion);
 
+        jsonManager.guardarLista(ARCHIVO_JSON, listaSanciones);
+
         return "ÉXITO: Sanción #" + nuevaSancion.getId() + " aplicada a " + usuario.getNombre() + " hasta " + fechaFin.toLocalDate();
     }
 
@@ -69,6 +89,8 @@ public class SancionController {
         if (usuario != null) {
             usuarioController.cambiarEstadoUsuario(usuario.getId(), "ACTIVO");
         }
+
+        jsonManager.guardarLista(ARCHIVO_JSON, listaSanciones);
 
         return "ÉXITO: Sanción #" + idSancion + " levantada correctamente.";
     }
