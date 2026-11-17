@@ -1,5 +1,7 @@
 package controller;
 
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -8,8 +10,12 @@ import java.util.List;
 import model.Equipo;
 import model.Prestamo;
 import model.Usuario;
+import persistencia.JsonManager;
 
 public class PrestamosController {
+    private static final String ARCHIVO_JSON = "prestamos.json";
+    private final JsonManager jsonManager;
+
     private List<Prestamo> listaPrestamos;
     private Deque<Prestamo> historialUltimosPrestamos;
     private int idContador;
@@ -18,11 +24,23 @@ public class PrestamosController {
     private EquipoController equipoController;
 
     public PrestamosController(UsuarioController usuarioController, EquipoController equipoController) {
-        this.listaPrestamos = new LinkedList<>();
+        this.jsonManager = new JsonManager();
         this.historialUltimosPrestamos = new ArrayDeque<>();
         this.usuarioController = usuarioController;
         this.equipoController = equipoController;
-        this.idContador = 1;
+
+        Type tipoLista = new TypeToken<LinkedList<Prestamo>>() {}.getType();
+        List<Prestamo> cargados = jsonManager.cargarLista(ARCHIVO_JSON, tipoLista);
+        this.listaPrestamos = (cargados != null) ? new LinkedList<>(cargados) : new LinkedList<>();
+
+        int maxId = 0;
+        for (Prestamo p : this.listaPrestamos) {
+            this.historialUltimosPrestamos.push(p);
+            if (p.getId() > maxId) {
+                maxId = p.getId();
+            }
+        }
+        this.idContador = maxId + 1;
     }
 
     /**
@@ -69,6 +87,8 @@ public class PrestamosController {
         listaPrestamos.add(nuevoPrestamo);
         historialUltimosPrestamos.push(nuevoPrestamo);
 
+        jsonManager.guardarLista(ARCHIVO_JSON, listaPrestamos);
+
         return "ÉXITO: Préstamo " + nuevoPrestamo.getCodigoPrestamo() + " registrado correctamente.";
     }
 
@@ -101,6 +121,8 @@ public class PrestamosController {
         String msjCola = (siguienteEstudiante != null) 
             ? " NOTA: El estudiante " + siguienteEstudiante + " es el siguiente en la cola."
             : "";
+
+        jsonManager.guardarLista(ARCHIVO_JSON, listaPrestamos);
 
         return "ÉXITO: Devolución registrada correctamente." + msjCola;
     }
