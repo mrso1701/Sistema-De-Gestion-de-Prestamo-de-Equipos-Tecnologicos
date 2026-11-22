@@ -400,31 +400,34 @@ public class Vista {
                                         Map.class);
 
                         String accion = datos.getOrDefault("accion", "PRESTAR");
-
                         String mensaje;
 
                         if ("DEVOLVER".equalsIgnoreCase(accion)) {
-
-                                int idPrestamo = Integer.parseInt(
-                                                datos.get("idPrestamo"));
-
-                                mensaje = prestamosController.registrarDevolucion(
-                                                idPrestamo,
-                                                1,
-                                                datos.getOrDefault(
-                                                                "observaciones",
-                                                                "Devuelto sin novedad"));
-
+                                try {
+                                        int idPrestamo = Integer.parseInt(datos.get("idPrestamo"));
+                                        mensaje = prestamosController.registrarDevolucion(
+                                                        idPrestamo,
+                                                        1,
+                                                        datos.getOrDefault("observaciones", "Devuelto sin novedad"));
+                                } catch (NumberFormatException e) {
+                                        mensaje = "ERROR: El código del préstamo debe ser numérico.";
+                                }
                         } else {
+                                LocalDateTime fechaPactada = LocalDateTime.now().plusHours(4);
+                                String fechaTexto = datos.get("fechaDevolucion");
+                                if (fechaTexto != null && !fechaTexto.trim().isEmpty()) {
+                                        try {
+                                                fechaPactada = LocalDateTime.parse(fechaTexto.trim());
+                                        } catch (Exception ignored) {
+                                        }
+                                }
 
                                 mensaje = prestamosController.registrarPrestamo(
                                                 datos.get("codigoInstitucional"),
                                                 datos.get("codigoInventario"),
-                                                LocalDateTime.now().plusHours(4),
+                                                fechaPactada,
                                                 1,
-                                                datos.getOrDefault(
-                                                                "observaciones",
-                                                                "Préstamo estándar"));
+                                                datos.getOrDefault("observaciones", "Préstamo estándar"));
                         }
 
                         if (mensaje.startsWith("ÉXITO")) {

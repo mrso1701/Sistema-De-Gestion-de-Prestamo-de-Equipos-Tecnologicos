@@ -12,5 +12,31 @@
     "estadoPrestamo": "FINALIZADO",
     "observacionesEntrega": "Préstamo estándar",
     "observacionesDevolucion": "Equipo devuelto sin novedad"
+  },
+  {
+    "id": 2,
+    "codigoPrestamo": "PRES-2",
+    "usuarioId": 4,
+    "equipoId": 2,
+    "encargadoEntregaId": 1,
+    "encargadoRecepcionId": 1,
+    "fechaHoraSalida": "2026-11-22T11:47:53.1052825",
+    "fechaHoraPactadaDevolucion": "2026-11-22T15:47:53.1052825",
+    "fechaHoraDevolucionReal": "2026-11-22T11:56:21.1851865",
+    "estadoPrestamo": "FINALIZADO",
+    "observacionesEntrega": "Préstamo estándar",
+    "observacionesDevolucion": "Equipo devuelto sin novedad"
+  },
+  {
+    "id": 3,
+    "codigoPrestamo": "PRES-3",
+    "usuarioId": 4,
+    "equipoId": 3,
+    "encargadoEntregaId": 1,
+    "encargadoRecepcionId": 0,
+    "fechaHoraSalida": "2026-11-22T11:56:54.0837382",
+    "fechaHoraPactadaDevolucion": "2026-11-25T11:56:00",
+    "estadoPrestamo": "ACTIVO",
+    "observacionesEntrega": "Que se entregue en buen estado"
   }
 ]

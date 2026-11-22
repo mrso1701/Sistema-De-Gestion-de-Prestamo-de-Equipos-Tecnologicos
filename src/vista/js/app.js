@@ -170,8 +170,8 @@ async function cargarDashboardInicio() {
             const textoUsuario = usr ? `${usr.nombre} (${usr.codigoInstitucional})` : `ID #${p.usuarioId}`;
             const textoEquipo = eq ? `${eq.marca} ${eq.modelo} (${eq.codigoInventario})` : `ID #${p.equipoId}`;
             const salida = p.fechaHoraSalida ? p.fechaHoraSalida.replace("T", " ").substring(0, 16) : "-";
-            const pactada = (p.fechaDevolucionPactada || p.fechaDevolucion)
-                ? (p.fechaDevolucionPactada || p.fechaDevolucion).replace("T", " ").substring(0, 16)
+            const pactada = p.fechaHoraPactadaDevolucion
+                ? p.fechaHoraPactadaDevolucion.replace("T", " ").substring(0, 16)
                 : "-";
 
             return `
@@ -402,8 +402,12 @@ if (formRegistrarUsuario) {
 const formRegistrarEquipo = document.getElementById("formRegistrarEquipo");
 
 async function cargarTablaEquipos() {
+    if (document.querySelector(".resumen")) return;
+
     const tbody = document.querySelector("table tbody");
     const esVistaEquipos = formRegistrarEquipo || document.querySelector(".fila-titulo .boton");
+
+    if (!tbody || !esVistaEquipos) return;
 
     if (!tbody || !esVistaEquipos) return;
 
@@ -522,8 +526,8 @@ async function cargarTablaPrestamos() {
             const textoUsuario = usr ? `${usr.nombre} (${usr.codigoInstitucional})` : `ID #${p.usuarioId}`;
             const textoEquipo = eq ? `${eq.marca} ${eq.modelo} (${eq.codigoInventario})` : `ID #${p.equipoId}`;
             const salida = p.fechaHoraSalida ? p.fechaHoraSalida.replace("T", " ").substring(0, 16) : "-";
-            const pactada = (p.fechaDevolucionPactada || p.fechaDevolucion)
-                ? (p.fechaDevolucionPactada || p.fechaDevolucion).replace("T", " ").substring(0, 16)
+            const pactada = p.fechaHoraPactadaDevolucion
+                ? p.fechaHoraPactadaDevolucion.replace("T", " ").substring(0, 16)
                 : "-";
 
             return `
