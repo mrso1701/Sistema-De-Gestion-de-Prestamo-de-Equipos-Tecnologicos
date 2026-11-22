@@ -1,3 +1,4 @@
+
 // =========================================================
 // CLIENTE API (CONEXIÓN CON Vista.java EN PUERTO 8080)
 // =========================================================
@@ -6,6 +7,7 @@ const API = {
         const res = await fetch("/api/usuarios");
         return await res.json();
     },
+
     async registrarUsuario(usuario) {
         const res = await fetch("/api/usuarios", {
             method: "POST",
@@ -14,10 +16,25 @@ const API = {
         });
         return await res.json();
     },
+
+    // NUEVO: INICIAR SESIÓN
+    async iniciarSesion(correo, contrasena) {
+        const res = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                correo: correo,
+                contrasena: contrasena
+            })
+        });
+        return await res.json();
+    },
+
     async obtenerEquipos() {
         const res = await fetch("/api/equipos");
         return await res.json();
     },
+
     async registrarEquipo(equipo) {
         const res = await fetch("/api/equipos", {
             method: "POST",
@@ -26,10 +43,12 @@ const API = {
         });
         return await res.json();
     },
+
     async obtenerPrestamos() {
         const res = await fetch("/api/prestamos");
         return await res.json();
     },
+
     async registrarPrestamo(codigoInstitucional, codigoInventario, fechaDevolucion, observaciones) {
         const res = await fetch("/api/prestamos", {
             method: "POST",
@@ -44,6 +63,7 @@ const API = {
         });
         return await res.json();
     },
+
     async devolverEquipo(idPrestamo, observaciones) {
         const res = await fetch("/api/prestamos", {
             method: "POST",
@@ -56,10 +76,12 @@ const API = {
         });
         return await res.json();
     },
+
     async obtenerSanciones() {
         const res = await fetch("/api/sanciones");
         return await res.json();
     },
+
     async aplicarSancion(codigoInstitucional, prestamoId, motivo, diasSancion, observaciones) {
         const res = await fetch("/api/sanciones", {
             method: "POST",
@@ -77,6 +99,7 @@ const API = {
     }
 };
 
+
 // =========================================================
 // 1. INICIO DE SESIÓN (login.html)
 // =========================================================
@@ -87,37 +110,29 @@ if (formLogin) {
         event.preventDefault();
 
         const correo = document.getElementById("correo").value.trim().toLowerCase();
-        const contrasena = document.getElementById("contrasena").value.trim();
+        const contrasena = document.getElementById("contrasena").value;
 
         try {
-            const usuarios = await API.obtenerUsuarios();
+            const respuesta = await API.iniciarSesion(correo, contrasena);
 
-            if (usuarios.length === 0 && correo === "admin@unicartagena.edu.co" && contrasena === "admin") {
-                sessionStorage.setItem("usuarioActivo", JSON.stringify({ nombre: "Administrador", correoInstitucional: correo }));
-                window.location.href = "inicio.html";
-                return;
-            }
+            if (respuesta.usuario) {
+                sessionStorage.setItem(
+                    "usuarioActivo",
+                    JSON.stringify(respuesta.usuario)
+                );
 
-            const usuarioValido = usuarios.find(
-                (u) => u.correoInstitucional && u.correoInstitucional.toLowerCase() === correo
-            );
-
-            if (usuarioValido) {
-                if (usuarioValido.estado && usuarioValido.estado.toUpperCase() !== "ACTIVO") {
-                    alert("El usuario se encuentra en estado: " + usuarioValido.estado);
-                    return;
-                }
-                sessionStorage.setItem("usuarioActivo", JSON.stringify(usuarioValido));
                 window.location.href = "inicio.html";
             } else {
-                alert("Correo institucional no registrado en el sistema.");
+                alert(respuesta.mensaje || "Correo o contraseña incorrectos.");
             }
+
         } catch (error) {
-            console.error(error);
+            console.error("Error al iniciar sesión:", error);
             alert("Error de conexión con el servidor Java.");
         }
     });
 }
+
 
 // =========================================================
 // 2. GESTIÓN DE USUARIOS (usuarios.html)
@@ -131,6 +146,7 @@ async function cargarTablaUsuarios() {
 
     try {
         const usuarios = await API.obtenerUsuarios();
+
         if (usuarios.length === 0) {
             tbody.innerHTML = `<tr><td colspan="5" class="vacio">No hay usuarios registrados todavía.</td></tr>`;
             return;
@@ -145,6 +161,7 @@ async function cargarTablaUsuarios() {
                 <td>${u.estado || "ACTIVO"}</td>
             </tr>
         `).join("");
+
     } catch (error) {
         console.error("Error al cargar tabla de usuarios:", error);
     }
@@ -155,11 +172,13 @@ if (formBuscarUsuario) {
 
     formBuscarUsuario.addEventListener("submit", async function (event) {
         event.preventDefault();
+
         const criterio = document.getElementById("documento").value.trim().toLowerCase();
         const resultado = document.getElementById("resultadoUsuario");
 
         try {
             const usuarios = await API.obtenerUsuarios();
+
             const encontrado = usuarios.find(
                 u => (u.documentoIdentidad && u.documentoIdentidad.toLowerCase() === criterio) ||
                     (u.codigoInstitucional && u.codigoInstitucional.toLowerCase() === criterio)
@@ -170,15 +189,33 @@ if (formBuscarUsuario) {
             } else {
                 resultado.textContent = "No se encontró ningún usuario con ese documento o código.";
             }
+
         } catch (error) {
             resultado.textContent = "Error al consultar el servidor.";
         }
     });
 }
 
+
+// REGISTRAR USUARIO CON CONTRASEÑA
 if (formRegistrarUsuario) {
     formRegistrarUsuario.addEventListener("submit", async function (event) {
         event.preventDefault();
+
+        const contrasena = document.getElementById("regContrasena").value;
+        const confirmarContrasena = document.getElementById("regConfirmarContrasena").value;
+
+        // Comprobar que las contraseñas coincidan
+        if (contrasena !== confirmarContrasena) {
+            alert("Las contraseñas no coinciden.");
+            return;
+        }
+
+        // Comprobar longitud mínima
+        if (contrasena.length < 8) {
+            alert("La contraseña debe tener al menos 8 caracteres.");
+            return;
+        }
 
         const nuevoUsuario = {
             codigoInstitucional: document.getElementById("regCodigo").value.trim(),
@@ -188,21 +225,28 @@ if (formRegistrarUsuario) {
             correoInstitucional: document.getElementById("regCorreo").value.trim().toLowerCase(),
             telefono: document.getElementById("regTelefono").value.trim(),
             tipoUsuario: document.getElementById("regTipo").value,
-            estado: "ACTIVO"
+            estado: "ACTIVO",
+
+            // Java recibirá esta contraseña y generará su hash.
+            contrasena: contrasena
         };
 
         try {
             const respuesta = await API.registrarUsuario(nuevoUsuario);
-            alert(respuesta.mensaje);
-            if (respuesta.mensaje.startsWith("ÉXITO")) {
+
+            alert(respuesta.mensaje || "No se recibió una respuesta válida del servidor.");
+
+            if (respuesta.mensaje && respuesta.mensaje.startsWith("ÉXITO")) {
                 formRegistrarUsuario.reset();
-                cargarTablaUsuarios();
             }
+
         } catch (error) {
+            console.error("Error al registrar usuario:", error);
             alert("Error al conectar con el servidor para registrar el usuario.");
         }
     });
 }
+
 
 // =========================================================
 // 3. GESTIÓN DE EQUIPOS (equipos.html)
@@ -212,10 +256,12 @@ const formRegistrarEquipo = document.getElementById("formRegistrarEquipo");
 async function cargarTablaEquipos() {
     const tbody = document.querySelector("table tbody");
     const esVistaEquipos = formRegistrarEquipo || document.querySelector(".fila-titulo .boton");
+
     if (!tbody || !esVistaEquipos) return;
 
     try {
         const equipos = await API.obtenerEquipos();
+
         if (equipos.length === 0) {
             tbody.innerHTML = `<tr><td colspan="5" class="vacio">No hay equipos registrados todavía.</td></tr>`;
             return;
@@ -230,6 +276,7 @@ async function cargarTablaEquipos() {
                 <td>${eq.estado || "DISPONIBLE"}</td>
             </tr>
         `).join("");
+
     } catch (error) {
         console.error("Error al cargar tabla de equipos:", error);
     }
@@ -254,25 +301,32 @@ if (formRegistrarEquipo) {
 
         try {
             const respuesta = await API.registrarEquipo(nuevoEquipo);
+
             alert(respuesta.mensaje);
+
             if (respuesta.mensaje.startsWith("ÉXITO")) {
                 formRegistrarEquipo.reset();
                 cargarTablaEquipos();
             }
+
         } catch (error) {
             alert("Error al conectar con el servidor para registrar el equipo.");
         }
     });
 }
 
+
 // Respaldo mientras tu compañera agrega el formulario HTML en equipos.html
 async function mostrarAviso() {
     const codigoInventario = prompt("Código de inventario (ej. EQ-001):");
     if (!codigoInventario) return;
+
     const marca = prompt("Marca (ej. Dell, Lenovo):");
     if (!marca) return;
+
     const modelo = prompt("Modelo (ej. Latitude 5420):");
     if (!modelo) return;
+
     const tipoEquipo = prompt("Tipo de equipo (ej. Portátil, Proyector):") || "Portátil";
 
     const respuesta = await API.registrarEquipo({
@@ -283,9 +337,14 @@ async function mostrarAviso() {
         estado: "DISPONIBLE",
         observacionesEstado: "Sin novedades"
     });
+
     alert(respuesta.mensaje);
-    if (respuesta.mensaje.startsWith("ÉXITO")) cargarTablaEquipos();
+
+    if (respuesta.mensaje.startsWith("ÉXITO")) {
+        cargarTablaEquipos();
+    }
 }
+
 
 // =========================================================
 // 4. GESTIÓN DE PRÉSTAMOS (prestamos.html)
@@ -312,6 +371,7 @@ async function cargarTablaPrestamos() {
         tbody.innerHTML = prestamos.map(p => {
             const usr = usuarios.find(u => u.id === p.usuarioId);
             const eq = equipos.find(e => e.id === p.equipoId);
+
             const textoUsuario = usr ? `${usr.nombre} (${usr.codigoInstitucional})` : `ID #${p.usuarioId}`;
             const textoEquipo = eq ? `${eq.marca} ${eq.modelo} (${eq.codigoInventario})` : `ID #${p.equipoId}`;
 
@@ -325,6 +385,7 @@ async function cargarTablaPrestamos() {
                 </tr>
             `;
         }).join("");
+
     } catch (error) {
         console.error("Error al cargar tabla de préstamos:", error);
     }
@@ -342,12 +403,13 @@ if (formPrestamo) {
         const observaciones = document.getElementById("observacionesEntrega").value.trim() || "Préstamo estándar";
 
         try {
-            // Permite buscar tanto por documentoIdentidad como por codigoInstitucional
             const usuarios = await API.obtenerUsuarios();
+
             const usr = usuarios.find(
                 u => (u.documentoIdentidad && u.documentoIdentidad.toLowerCase() === criterioUsuario) ||
                     (u.codigoInstitucional && u.codigoInstitucional.toLowerCase() === criterioUsuario)
             );
+
             const codigoInstitucional = usr ? usr.codigoInstitucional : criterioUsuario;
 
             const respuesta = await API.registrarPrestamo(
@@ -356,11 +418,14 @@ if (formPrestamo) {
                 fechaDevolucion,
                 observaciones
             );
+
             alert(respuesta.mensaje);
+
             if (respuesta.mensaje.startsWith("ÉXITO")) {
                 formPrestamo.reset();
                 cargarTablaPrestamos();
             }
+
         } catch (error) {
             alert("Error al conectar con el servidor para registrar el préstamo.");
         }
@@ -376,23 +441,29 @@ if (formDevolucion) {
 
         try {
             const prestamos = await API.obtenerPrestamos();
+
             const prestamoEncontrado = prestamos.find(
                 p => String(p.id) === codigoIngresado ||
                     (p.codigoPrestamo && p.codigoPrestamo.toLowerCase() === codigoIngresado.toLowerCase())
             );
+
             const idNumerico = prestamoEncontrado ? prestamoEncontrado.id : codigoIngresado;
 
             const respuesta = await API.devolverEquipo(idNumerico, observaciones);
+
             alert(respuesta.mensaje);
+
             if (respuesta.mensaje.startsWith("ÉXITO")) {
                 formDevolucion.reset();
                 cargarTablaPrestamos();
             }
+
         } catch (error) {
             alert("Error al conectar con el servidor para registrar la devolución.");
         }
     });
 }
+
 
 // =========================================================
 // 5. GESTIÓN DE SANCIONES (sanciones.html)
@@ -411,12 +482,15 @@ async function cargarTablaSanciones(filtroDocumento = "") {
         ]);
 
         let lista = sanciones;
+
         if (filtroDocumento) {
             const criterio = filtroDocumento.toLowerCase();
+
             const usr = usuarios.find(
                 u => (u.documentoIdentidad && u.documentoIdentidad.toLowerCase() === criterio) ||
                     (u.codigoInstitucional && u.codigoInstitucional.toLowerCase() === criterio)
             );
+
             lista = usr ? sanciones.filter(s => s.usuarioId === usr.id) : [];
         }
 
@@ -427,6 +501,7 @@ async function cargarTablaSanciones(filtroDocumento = "") {
 
         tbody.innerHTML = lista.map(s => {
             const usr = usuarios.find(u => u.id === s.usuarioId);
+
             const textoUsuario = usr ? `${usr.nombre} (${usr.documentoIdentidad || usr.codigoInstitucional})` : `ID #${s.usuarioId}`;
 
             return `
@@ -439,6 +514,7 @@ async function cargarTablaSanciones(filtroDocumento = "") {
                 </tr>
             `;
         }).join("");
+
     } catch (error) {
         console.error("Error al cargar tabla de sanciones:", error);
     }
@@ -449,6 +525,7 @@ if (formBuscarSancion) {
 
     formBuscarSancion.addEventListener("submit", function (event) {
         event.preventDefault();
+
         const documento = document.getElementById("documentoSancion").value.trim();
         cargarTablaSanciones(documento);
     });
@@ -466,10 +543,12 @@ if (formRegistrarSancion) {
 
         try {
             const usuarios = await API.obtenerUsuarios();
+
             const usr = usuarios.find(
                 u => (u.documentoIdentidad && u.documentoIdentidad.toLowerCase() === criterioUsuario) ||
                     (u.codigoInstitucional && u.codigoInstitucional.toLowerCase() === criterioUsuario)
             );
+
             const codigoInstitucional = usr ? usr.codigoInstitucional : criterioUsuario;
 
             const respuesta = await API.aplicarSancion(
@@ -479,11 +558,14 @@ if (formRegistrarSancion) {
                 diasSancion,
                 observaciones
             );
+
             alert(respuesta.mensaje);
+
             if (respuesta.mensaje.startsWith("ÉXITO")) {
                 formRegistrarSancion.reset();
                 cargarTablaSanciones();
             }
+
         } catch (error) {
             alert("Error al conectar con el servidor para aplicar la sanción.");
         }

@@ -1,3 +1,4 @@
+
 package model;
 
 public class Usuario {
@@ -10,6 +11,7 @@ public class Usuario {
     private String telefono;
     private String tipoUsuario;
     private String estado;
+    private String contrasenaHash;
 
     public Usuario(){
 
@@ -62,19 +64,33 @@ public class Usuario {
         return correoInstitucional;
     }
 
-    public void setCorreoInstitucional(String correoInstitucional) {this.correoInstitucional = correoInstitucional;}
+    public void setCorreoInstitucional(String correoInstitucional) {
+        this.correoInstitucional = correoInstitucional;
+    }
 
-    public String getTelefono() {return telefono;}
+    public String getTelefono() {
+        return telefono;
+    }
 
-    public void setTelefono(String telefono) {this.telefono = telefono;}
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
 
-    public String getTipoUsuario() {return tipoUsuario;}
+    public String getTipoUsuario() {
+        return tipoUsuario;
+    }
 
-    public void setTipoUsuario(String tipoUsuario) {this.tipoUsuario = tipoUsuario;}
+    public void setTipoUsuario(String tipoUsuario) {
+        this.tipoUsuario = tipoUsuario;
+    }
 
-    public String getEstado() {return estado;}
+    public String getEstado() {
+        return estado;
+    }
 
-    public void setEstado(String estado) {this.estado = estado;}
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
 
     public String getCodigoInstitucional() {
         return codigoInstitucional;
@@ -84,7 +100,14 @@ public class Usuario {
         this.codigoInstitucional = codigoInstitucional;
     }
 
-    
+    public String getContrasenaHash() {
+        return contrasenaHash;
+    }
+
+    public void setContrasenaHash(String contrasenaHash) {
+        this.contrasenaHash = contrasenaHash;
+    }
+
     public String toString() {
         return "Usuario{" +
                 "id=" + id +
@@ -94,5 +117,4 @@ public class Usuario {
                 ", estado='" + estado + '\'' +
                 '}';
     }
-       
 }

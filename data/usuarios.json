@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "codigoInstitucional": "130001",
+    "documentoIdentidad": "1042582925",
+    "nombre": "Isabella",
+    "apellido": "Torres Yepes",
+    "correoInstitucional": "isa.torres@unicolombo.edu.co",
+    "telefono": "3216132974",
+    "tipoUsuario": "MONITOR_BIBLIOTECA",
+    "estado": "ACTIVO",
+    "contrasenaHash": "120000:HeiVWetfezlpcV3Z+vOIOg\u003d\u003d:yb0LFxb0JLTiK22kg07PgD6BxiXexUyvb/3k3ZQVI+w\u003d"
+  }
+]

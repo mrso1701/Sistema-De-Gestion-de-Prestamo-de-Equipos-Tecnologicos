@@ -1,0 +1,12 @@
+[
+     {
+    "id": 1,
+    "codigoInstitucional": "12345",
+    "nombre": "Laura",
+    "apellido": "Pérez",
+    "correoInstitucional": "laura@unicolombo.edu.co",
+    "tipoUsuario": "MONITOR_BIBLIOTECA",
+    "estado": "ACTIVO",
+    "contrasenaHash": "120000:..."
+  }
+]
