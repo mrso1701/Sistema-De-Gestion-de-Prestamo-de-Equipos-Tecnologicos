@@ -10,5 +10,41 @@
     "tipoUsuario": "MONITOR_BIBLIOTECA",
     "estado": "ACTIVO",
     "contrasenaHash": "120000:HeiVWetfezlpcV3Z+vOIOg\u003d\u003d:yb0LFxb0JLTiK22kg07PgD6BxiXexUyvb/3k3ZQVI+w\u003d"
+  },
+  {
+    "id": 2,
+    "codigoInstitucional": "ADMIN-SALA",
+    "documentoIdentidad": "10000001",
+    "nombre": "Encargado",
+    "apellido": "Sala",
+    "correoInstitucional": "sala@unicartagena.edu.co",
+    "telefono": "3000000001",
+    "tipoUsuario": "ENCARGADO_SALA",
+    "estado": "ACTIVO",
+    "contrasenaHash": "120000:1E6a+Br5ndEU9rUn9skPDQ\u003d\u003d:Qu0PCAGt5yPL9i5v0HLqJypOz9FrrYzA8B5/+dbapJM\u003d"
+  },
+  {
+    "id": 3,
+    "codigoInstitucional": "ADMIN-JEFE",
+    "documentoIdentidad": "10000002",
+    "nombre": "Jefe",
+    "apellido": "Laboratorio",
+    "correoInstitucional": "jefe@unicartagena.edu.co",
+    "telefono": "3000000002",
+    "tipoUsuario": "JEFE_LABORATORIO",
+    "estado": "ACTIVO",
+    "contrasenaHash": "120000:lnceyY6/tPEoBhPYDvt3Tw\u003d\u003d:2SmEWPb/b3QrZCXEBoBgLpUOGdjSBW+pPfBML4MS9ck\u003d"
+  },
+  {
+    "id": 4,
+    "codigoInstitucional": "7502520006",
+    "documentoIdentidad": "1043976359",
+    "nombre": "Andres",
+    "apellido": "Rodriguez",
+    "correoInstitucional": "andres@unicartagena.edu.co",
+    "telefono": "3053439967",
+    "tipoUsuario": "ESTUDIANTE",
+    "estado": "ACTIVO",
+    "contrasenaHash": "120000:ttlF45Hbm9405ATumJ70NQ\u003d\u003d:GY1pJfJ+egRJQStp3s1/BTzekloYfs21v9f/MTbgslU\u003d"
   }
 ]

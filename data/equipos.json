@@ -1,1 +1,47 @@
-[]
+[
+  {
+    "id": 1,
+    "codigoInventario": "EQ-002",
+    "marca": "Lenovo",
+    "modelo": "Latitude 5420",
+    "tipoEquipo": "Desktop",
+    "estado": "DISPONIBLE",
+    "observacionesEstado": "Sin novedades"
+  },
+  {
+    "id": 2,
+    "codigoInventario": "EQ-001",
+    "marca": "Lenovo",
+    "modelo": "ThinkPad E14",
+    "tipoEquipo": "Portátil",
+    "estado": "DISPONIBLE",
+    "observacionesEstado": "Equipo operativo en sala"
+  },
+  {
+    "id": 3,
+    "codigoInventario": "EQ-003",
+    "marca": "HP",
+    "modelo": "ProBook 450 G9",
+    "tipoEquipo": "Portátil",
+    "estado": "DISPONIBLE",
+    "observacionesEstado": "Equipo operativo en sala"
+  },
+  {
+    "id": 4,
+    "codigoInventario": "EQ-004",
+    "marca": "Epson",
+    "modelo": "PowerLite X49",
+    "tipoEquipo": "Proyector",
+    "estado": "DISPONIBLE",
+    "observacionesEstado": "Equipo operativo en sala"
+  },
+  {
+    "id": 5,
+    "codigoInventario": "EQ-005",
+    "marca": "Samsung",
+    "modelo": "Galaxy Tab S8",
+    "tipoEquipo": "Tablet",
+    "estado": "DISPONIBLE",
+    "observacionesEstado": "Equipo operativo en sala"
+  }
+]

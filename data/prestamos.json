@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "id": 1,
+    "codigoPrestamo": "PRES-1",
+    "usuarioId": 4,
+    "equipoId": 2,
+    "encargadoEntregaId": 1,
+    "encargadoRecepcionId": 1,
+    "fechaHoraSalida": "2026-11-22T11:32:06.8909022",
+    "fechaHoraPactadaDevolucion": "2026-11-22T15:32:06.8909022",
+    "fechaHoraDevolucionReal": "2026-11-22T11:36:39.5084002",
+    "estadoPrestamo": "FINALIZADO",
+    "observacionesEntrega": "Préstamo estándar",
+    "observacionesDevolucion": "Equipo devuelto sin novedad"
+  }
+]

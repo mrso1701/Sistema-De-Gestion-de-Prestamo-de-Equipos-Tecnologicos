@@ -99,6 +99,153 @@ const API = {
     }
 };
 
+// =========================================================
+// DASHBOARD DE INICIO (inicio.html) 
+// =========================================================
+async function cargarDashboardInicio() {
+    const seccionResumen = document.querySelector(".resumen");
+    if (!seccionResumen) return; // Solo corre en inicio.html
+
+    const usuario = obtenerUsuarioActivo();
+    if (!usuario) return;
+
+    const esAdmin = esAdministrador(usuario);
+
+    // Personalizar encabezado con el nombre y rol del usuario logueado
+    const subtituloHeader = document.querySelector(".encabezado p");
+    if (subtituloHeader) {
+        subtituloHeader.textContent = `Bienvenido, ${usuario.nombre} ${usuario.apellido || ""} (${usuario.tipoUsuario})`;
+    }
+
+    // Si NO es admin, ocultar el botón "Gestionar préstamos" y adaptar textos
+    if (!esAdmin) {
+        const btnGestionar = document.querySelector('.fila-titulo a[href*="prestamos.html"]');
+        if (btnGestionar) btnGestionar.style.display = "none";
+
+        const tituloTabla = document.querySelector(".panel .fila-titulo h2");
+        if (tituloTabla) tituloTabla.textContent = "Mis préstamos";
+    }
+
+    try {
+        const [equipos, prestamos, usuarios, sanciones] = await Promise.all([
+            API.obtenerEquipos(),
+            API.obtenerPrestamos(),
+            API.obtenerUsuarios(),
+            API.obtenerSanciones()
+        ]);
+
+        const cajas = seccionResumen.querySelectorAll(".caja-resumen");
+        const equiposDisponibles = equipos.filter(e => (e.estado || "").toUpperCase() === "DISPONIBLE").length;
+
+        if (esAdmin) {
+            const prestamosActivos = prestamos.filter(p => (p.estadoPrestamo || "").toUpperCase() === "ACTIVO").length;
+
+            if (cajas[0]) cajas[0].querySelector("strong").textContent = equiposDisponibles;
+            if (cajas[1]) cajas[1].querySelector("strong").textContent = prestamosActivos;
+            if (cajas[2]) cajas[2].querySelector("strong").textContent = usuarios.length;
+        } else {
+            const misPrestamosActivos = prestamos.filter(
+                p => p.usuarioId === usuario.id && (p.estadoPrestamo || "").toUpperCase() === "ACTIVO"
+            ).length;
+            const misSancionesActivas = sanciones.filter(
+                s => s.usuarioId === usuario.id && (s.estado || "").toUpperCase() === "ACTIVA"
+            ).length;
+
+            if (cajas[0]) cajas[0].querySelector("strong").textContent = equiposDisponibles;
+            if (cajas[1]) {
+                cajas[1].querySelector("span").textContent = "Mis préstamos activos";
+                cajas[1].querySelector("strong").textContent = misPrestamosActivos;
+            }
+            if (cajas[2]) {
+                cajas[2].querySelector("span").textContent = "Mis sanciones activas";
+                cajas[2].querySelector("strong").textContent = misSancionesActivas;
+            }
+        }
+
+        // Llenar tabla de préstamos en inicio.html
+        tbody.innerHTML = listaMostrar.map(p => {
+            const usr = usuarios.find(u => u.id === p.usuarioId);
+            const eq = equipos.find(e => e.id === p.equipoId);
+
+            const textoUsuario = usr ? `${usr.nombre} (${usr.codigoInstitucional})` : `ID #${p.usuarioId}`;
+            const textoEquipo = eq ? `${eq.marca} ${eq.modelo} (${eq.codigoInventario})` : `ID #${p.equipoId}`;
+            const salida = p.fechaHoraSalida ? p.fechaHoraSalida.replace("T", " ").substring(0, 16) : "-";
+            const pactada = (p.fechaDevolucionPactada || p.fechaDevolucion)
+                ? (p.fechaDevolucionPactada || p.fechaDevolucion).replace("T", " ").substring(0, 16)
+                : "-";
+
+            return `
+                <tr>
+                    <td>${p.codigoPrestamo || p.id || "-"}</td>
+                    <td>${textoUsuario}</td>
+                    <td>${textoEquipo}</td>
+                    <td>${salida}</td>
+                    <td>${pactada}</td>
+                    <td>${p.estadoPrestamo || "ACTIVO"}</td>
+                </tr>
+            `;
+        }).join("");
+
+    } catch (error) {
+        console.error("Error al cargar el dashboard de inicio:", error);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", cargarDashboardInicio);
+
+// =========================================================
+// CONTROL DE ACCESO Y ROLES 
+// =========================================================
+const ROLES_ADMIN = ["ENCARGADO_SALA", "JEFE_LABORATORIO"];
+
+function obtenerUsuarioActivo() {
+    const data = sessionStorage.getItem("usuarioActivo");
+    return data ? JSON.parse(data) : null;
+}
+
+function esAdministrador(usuario) {
+    if (!usuario || !usuario.tipoUsuario) return false;
+    return ROLES_ADMIN.includes(usuario.tipoUsuario.toUpperCase());
+}
+
+function cerrarSesion() {
+    sessionStorage.removeItem("usuarioActivo");
+    window.location.href = "login.html";
+}
+
+(function protegerVistasPorRol() {
+    const ruta = window.location.pathname.toLowerCase();
+    const esPublica = ruta.endsWith("login.html") || ruta.endsWith("registro.html");
+    const usuario = obtenerUsuarioActivo();
+
+    // Si no ha iniciado sesión y entra a una vista privada -> mandar a login
+    if (!esPublica && !usuario) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    // Si ya inició sesión pero NO es uno de los 2 administradores
+    if (usuario && !esAdministrador(usuario)) {
+        const vistasCrud = ["usuarios.html", "equipos.html", "prestamos.html", "sanciones.html"];
+        const intentaEntrarACrud = vistasCrud.some(v => ruta.endsWith(v));
+
+        if (intentaEntrarACrud) {
+            alert("Acceso denegado: Solo el Encargado de Sala y el Jefe de Laboratorio pueden gestionar los CRUD.");
+            window.location.href = "inicio.html";
+            return;
+        }
+
+        // En inicio.html: ocultar enlaces/tarjetas de navegación hacia los CRUD administrativos
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll('a[href*="usuarios.html"], a[href*="equipos.html"], a[href*="prestamos.html"], a[href*="sanciones.html"]')
+                .forEach(enlace => {
+                    const contenedor = enlace.closest("li, .tarjeta, .card") || enlace;
+                    contenedor.style.display = "none";
+                });
+        });
+    }
+})();
+
 
 // =========================================================
 // 1. INICIO DE SESIÓN (login.html)
@@ -224,7 +371,7 @@ if (formRegistrarUsuario) {
             apellido: document.getElementById("regApellido").value.trim(),
             correoInstitucional: document.getElementById("regCorreo").value.trim().toLowerCase(),
             telefono: document.getElementById("regTelefono").value.trim(),
-            tipoUsuario: document.getElementById("regTipo").value,
+            tipoUsuario: "ESTUDIANTE",
             estado: "ACTIVO",
 
             // Java recibirá esta contraseña y generará su hash.
@@ -238,6 +385,7 @@ if (formRegistrarUsuario) {
 
             if (respuesta.mensaje && respuesta.mensaje.startsWith("ÉXITO")) {
                 formRegistrarUsuario.reset();
+                window.location.href = "login.html";
             }
 
         } catch (error) {
@@ -316,7 +464,6 @@ if (formRegistrarEquipo) {
 }
 
 
-// Respaldo mientras tu compañera agrega el formulario HTML en equipos.html
 async function mostrarAviso() {
     const codigoInventario = prompt("Código de inventario (ej. EQ-001):");
     if (!codigoInventario) return;
@@ -364,7 +511,7 @@ async function cargarTablaPrestamos() {
         ]);
 
         if (prestamos.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="vacio">No hay préstamos registrados todavía.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="vacio">No hay préstamos registrados todavía.</td></tr>`;
             return;
         }
 
@@ -374,13 +521,18 @@ async function cargarTablaPrestamos() {
 
             const textoUsuario = usr ? `${usr.nombre} (${usr.codigoInstitucional})` : `ID #${p.usuarioId}`;
             const textoEquipo = eq ? `${eq.marca} ${eq.modelo} (${eq.codigoInventario})` : `ID #${p.equipoId}`;
+            const salida = p.fechaHoraSalida ? p.fechaHoraSalida.replace("T", " ").substring(0, 16) : "-";
+            const pactada = (p.fechaDevolucionPactada || p.fechaDevolucion)
+                ? (p.fechaDevolucionPactada || p.fechaDevolucion).replace("T", " ").substring(0, 16)
+                : "-";
 
             return `
                 <tr>
                     <td>${p.codigoPrestamo || p.id || "-"}</td>
                     <td>${textoUsuario}</td>
                     <td>${textoEquipo}</td>
-                    <td>${p.fechaHoraSalida ? p.fechaHoraSalida.replace("T", " ").substring(0, 16) : "-"}</td>
+                    <td>${salida}</td>
+                    <td>${pactada}</td>
                     <td>${p.estadoPrestamo || "ACTIVO"}</td>
                 </tr>
             `;
@@ -436,24 +588,41 @@ if (formDevolucion) {
     formDevolucion.addEventListener("submit", async function (event) {
         event.preventDefault();
 
-        const codigoIngresado = document.getElementById("codigoPrestamo").value.trim();
+        const criterio = document.getElementById("codigoPrestamo").value.trim().toLowerCase();
         const observaciones = document.getElementById("observacionesDevolucion").value.trim() || "Equipo devuelto sin novedad";
 
         try {
-            const prestamos = await API.obtenerPrestamos();
+            const [prestamos, equipos] = await Promise.all([
+                API.obtenerPrestamos(),
+                API.obtenerEquipos()
+            ]);
 
-            const prestamoEncontrado = prestamos.find(
-                p => String(p.id) === codigoIngresado ||
-                    (p.codigoPrestamo && p.codigoPrestamo.toLowerCase() === codigoIngresado.toLowerCase())
+            // Buscar por ID o código del préstamo
+            let prestamoEncontrado = prestamos.find(
+                p => String(p.id).toLowerCase() === criterio ||
+                    (p.codigoPrestamo && p.codigoPrestamo.toLowerCase() === criterio)
             );
 
-            const idNumerico = prestamoEncontrado ? prestamoEncontrado.id : codigoIngresado;
+            // Si no coincidió, buscar por código del equipo (ej. EQ-001) en préstamos ACTIVOS
+            if (!prestamoEncontrado) {
+                const eq = equipos.find(e => e.codigoInventario && e.codigoInventario.toLowerCase() === criterio);
+                if (eq) {
+                    prestamoEncontrado = prestamos.find(
+                        p => p.equipoId === eq.id && (p.estadoPrestamo || "").toUpperCase() === "ACTIVO"
+                    );
+                }
+            }
 
-            const respuesta = await API.devolverEquipo(idNumerico, observaciones);
+            if (!prestamoEncontrado) {
+                alert("No se encontró ningún préstamo activo con ese código de préstamo o código de equipo.");
+                return;
+            }
+
+            const respuesta = await API.devolverEquipo(prestamoEncontrado.id, observaciones);
 
             alert(respuesta.mensaje);
 
-            if (respuesta.mensaje.startsWith("ÉXITO")) {
+            if (respuesta.mensaje && respuesta.mensaje.startsWith("ÉXITO")) {
                 formDevolucion.reset();
                 cargarTablaPrestamos();
             }
